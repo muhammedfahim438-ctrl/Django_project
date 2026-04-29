@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" defer></script>
+
+<style>
+:root {
+  --bg: #eef2ff;
+  --sidebar: #0f172a;
+  --accent: #2563eb;
+  --accent-light: #eff6ff;
+  --accent-glow: rgba(37, 99, 235, 0.15);
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --white: #ffffff;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --card-shadow: 0 4px 6px -1px rgba(15,23,42,0.06), 0 10px 40px -5px rgba(15,23,42,0.10);
+  --sidebar-shadow: 4px 0 30px rgba(15,23,42,0.18);
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── Layout ─────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 288px 1fr;
+  min-height: 100vh;
+}
+
+/* ─── Sidebar ─────────────────────────── */
+.sidebar {
+  background: var(--sidebar);
+  color: white;
+  padding: 32px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-shadow: var(--sidebar-shadow);
+  z-index: 10;
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+  padding: 0 4px;
+}
+
+.brand-icon {
+  width: 38px; height: 38px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.45);
+  flex-shrink: 0;
+}
+
+.brand-text {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+
+.brand-text small {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+/* Profile Trigger */
+.profile-trigger {
+  width: 100%;
+  background: rgba(255,255,255,0.055);
+  border: 1px solid rgba(255,255,255,0.09);
+  color: white;
+  border-radius: 18px;
+  padding: 20px 16px;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 28px;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-trigger::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(37,99,235,0.12) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.profile-trigger:hover::before { opacity: 1; }
+.profile-trigger:hover { border-color: rgba(37,99,235,0.4); transform: translateY(-1px); }
+
+.avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.85);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  display: block;
+}
+
+.avatar-badge {
+  position: absolute;
+  bottom: 3px; right: 0;
+  width: 18px; height: 18px;
+  background: var(--success);
+  border: 2px solid var(--sidebar);
+  border-radius: 50%;
+}
+
+.profile-trigger h3 {
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.profile-trigger p {
+  margin-top: 3px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+/* Nav */
+.nav-section {
+  flex: 1;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #475569;
+  text-transform: uppercase;
+  padding: 0 14px;
+  margin-bottom: 8px;
+}
+
+.nav-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #94a3b8;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-bottom: 4px;
+  transition: all 0.18s;
+  position: relative;
+}
+
+.nav-button .nav-icon {
+  font-size: 17px;
+  transition: transform 0.2s;
+}
+
+.nav-button:hover {
+  background: rgba(255,255,255,0.07);
+  color: white;
+}
+
+.nav-button.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.4);
+}
+
+.nav-button.active .nav-icon { transform: scale(1.1); }
+
+.nav-button .badge {
+  margin-left: auto;
+  background: rgba(255,255,255,0.15);
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-weight: 500;
+}
+
+.nav-button.active .badge { background: rgba(255,255,255,0.25); }
+
+.sidebar-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.logout-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #f87171;
+  background: rgba(239,68,68,0.1);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.18s, color 0.18s;
+}
+
+.logout-link:hover { background: rgba(239,68,68,0.2); color: #fca5a5; }
+
+/* ─── Main ─────────────────────────── */
+.main {
+  padding: 36px 40px;
+  min-width: 0;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.topbar h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  margin-bottom: 5px;
+}
+
+.topbar p {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.topbar-pills {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.progress-pill {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 14px 20px;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+  min-width: 140px;
+  border: 1px solid var(--border);
+  transition: transform 0.2s;
+}
+
+.progress-pill:hover { transform: translateY(-2px); }
+
+.progress-pill strong {
+  display: block;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.progress-pill span {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-top: 3px;
+  display: block;
+}
+
+/* Tab Panels */
+.tab-panel { display: none; animation: fadeUp 0.3s ease; }
+.tab-panel.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 22px 22px 18px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(15,23,42,0.12); }
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  border-radius: 0 20px 0 80px;
+  opacity: 0.06;
+}
+
+.stat-card:nth-child(1)::after { background: var(--accent); }
+.stat-card:nth-child(2)::after { background: var(--success); }
+.stat-card:nth-child(3)::after { background: var(--danger); }
+
+.stat-card-icon {
+  font-size: 22px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.stat-card h4 {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.stat-card h2 {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+}
+
+.stat-card:nth-child(1) h2 { color: var(--accent); }
+.stat-card:nth-child(2) h2 { color: #16a34a; }
+.stat-card:nth-child(3) h2 { color: var(--danger); }
+
+/* Section */
+.section {
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  padding: 26px 28px;
+  margin-bottom: 20px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.section-heading h3 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.section-heading p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  border-radius: 99px;
+  background: #e2e8f0;
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  border-radius: 99px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Add Task Form */
+.add-task-form {
+  display: grid;
+  gap: 14px;
+}
+
+.add-task-form input,
+.add-task-form textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  background: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  outline: none;
+}
+
+.add-task-form input:focus,
+.add-task-form textarea:focus {
+  border-color: var(--accent);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+}
+
+.add-task-form textarea { min-height: 90px; resize: vertical; }
+
+/* Profile */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.profile-photo-large {
+  text-align: center;
+}
+
+.profile-photo-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-photo-large img {
+  width: 140px; height: 140px;
+  border-radius: 24px;
+  object-fit: cover;
+  border: 4px solid var(--accent);
+  box-shadow: 0 12px 40px rgba(37,99,235,0.2);
+  display: block;
+}
+
+.photo-status {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.info-list { display: grid; gap: 10px; }
+
+.info-item {
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.info-item:hover { border-color: #cbd5e1; }
+
+.info-item-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.info-item div { min-width: 0; }
+
+.info-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.info-item strong {
+  font-size: 15px;
+  font-weight: 700;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Edit Profile Form */
+.edit-profile { display: none; margin-top: 20px; }
+.edit-profile.active { display: block; animation: fadeUp 0.25s ease; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.field { margin-bottom: 14px; }
+
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+}
+
+.field textarea { min-height: 95px; resize: vertical; }
+
+.photo-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.photo-label:hover { background: #dbeafe; }
+input[type="file"] { display: none; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 11px;
+  padding: 10px 18px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13.5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+  white-space: nowrap;
+}
+
+.btn:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,0.35); }
+.btn:active { transform: translateY(0); }
+
+.btn.secondary {
+  background: #f1f5f9;
+  color: #334155;
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+
+.btn.secondary:hover { background: #e2e8f0; box-shadow: none; color: var(--text); }
+
+.btn.danger {
+  background: rgba(239,68,68,0.1);
+  color: var(--danger);
+  box-shadow: none;
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+.btn.danger:hover { background: rgba(239,68,68,0.18); box-shadow: none; }
+
+.btn.done {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  box-shadow: none;
+  cursor: default;
+}
+
+.btn.done:hover { transform: none; }
+
+.button-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Tasks */
+.task-list { display: grid; gap: 12px; }
+
+.task-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 20px;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  background: #fafbfc;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.task-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 12px; bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.task-item:hover { border-color: #cbd5e1; background: var(--white); box-shadow: 0 4px 20px rgba(15,23,42,0.07); }
+.task-item:hover::before { opacity: 1; }
+
+.task-item.completed {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.task-item.completed::before { background: var(--success); opacity: 1; }
+
+.task-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.task-desc {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.status.pending { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.status.complete { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+.status::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+.status.pending::before { background: var(--danger); }
+.status.complete::before { background: var(--success); }
+
+/* Empty state */
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  color: var(--muted);
+}
+
+.empty-state-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+.empty-state-title { font-size: 16px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+.empty-state p { font-size: 13px; }
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* Error list */
+.errorlist { color: #dc2626; list-style: none; font-size: 12px; margin-top: 5px; font-weight: 600; }
+
+/* ─── Photo column (left side in edit mode) ─── */
+.photo-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.change-photo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1.5px solid #bfdbfe;
+  transition: background 0.18s, border-color 0.18s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  width: 100%;
+  justify-content: center;
+}
+
+.change-photo-btn:hover { background: #dbeafe; border-color: #93c5fd; }
+
+.photo-hint {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ─── Crop Modal ─── */
+.crop-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(2, 8, 23, 0.82);
+  backdrop-filter: blur(10px) saturate(1.4);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.crop-overlay.open {
+  display: flex;
+  animation: cropFadeIn 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes cropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.crop-modal {
+  background: #ffffff;
+  border-radius: 28px;
+  width: min(780px, 96vw);
+  box-shadow:
+    0 0 0 1px rgba(15,23,42,0.06),
+    0 40px 100px rgba(15,23,42,0.35),
+    0 12px 30px rgba(15,23,42,0.2);
+  overflow: hidden;
+  animation: cropSlideUp 0.28s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes cropSlideUp {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Header */
+.crop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 16px;
+  background: #fff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.crop-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crop-header-icon {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+}
+
+.crop-header-icon svg { width: 18px; height: 18px; color: white; }
+
+.crop-header-title { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+.crop-header-sub   { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 1px; }
+
+.crop-close {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  border: 0;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #64748b;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.crop-close:hover { background: #fee2e2; color: #dc2626; }
+.crop-close svg { width: 16px; height: 16px; }
+
+/* Body: two-column */
+.crop-body {
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  min-height: 360px;
+}
+
+/* Left: dark canvas area */
+.crop-canvas-wrap {
+  background: #0b1120;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 340px;
+  position: relative;
+}
+
+.crop-canvas-wrap img {
+  max-width: 100%;
+  max-height: 340px;
+  display: block;
+}
+
+/* Right: preview panel */
+.crop-preview-panel {
+  background: #f8fafc;
+  border-left: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  gap: 20px;
+}
+
+.crop-preview-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.crop-preview-circle {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 3px var(--accent), 0 8px 24px rgba(37,99,235,0.2);
+  background: #e2e8f0;
+}
+
+/* Cropper.js puts a preview div inside */
+.crop-preview-circle .cropper-preview {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden;
+}
+
+.crop-preview-sq {
+  width: 72px; height: 72px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #cbd5e1, 0 4px 12px rgba(15,23,42,0.1);
+  background: #e2e8f0;
+}
+
+.crop-preview-sq .cropper-preview {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden;
+}
+
+/* Controls bar */
+.crop-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background: #fff;
+  border-top: 1px solid #f1f5f9;
+}
+
+.crop-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: #f1f5f9;
+  border-radius: 12px;
+}
+
+.crop-tool-btn {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: #475569;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+  position: relative;
+}
+
+.crop-tool-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+.crop-tool-btn:hover { background: white; color: var(--accent); transform: scale(1.06); box-shadow: 0 2px 8px rgba(15,23,42,0.1); }
+.crop-tool-btn:active { transform: scale(0.96); }
+
+/* zoom group */
+.crop-zoom-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.crop-zoom-ico { flex-shrink: 0; color: #94a3b8; }
+.crop-zoom-ico svg { width: 15px; height: 15px; display: block; }
+
+.crop-zoom-range {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent) var(--pct, 50%), #cbd5e1 var(--pct, 50%));
+  outline: none;
+  cursor: pointer;
+  min-width: 60px;
+}
+
+.crop-zoom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(37,99,235,0.4);
+  cursor: grab;
+  border: 2px solid white;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.crop-zoom-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 14px rgba(37,99,235,0.5);
+}
+
+.crop-zoom-range::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: grab;
+  border: 2px solid white;
+}
+
+/* Footer */
+.crop-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: #fafbff;
+  border-top: 1px solid #f1f5f9;
+  gap: 12px;
+}
+
+.crop-footer-tip {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.crop-footer-tip svg { width: 14px; height: 14px; flex-shrink: 0; color: #2563eb; }
+
+.crop-footer-actions { display: flex; gap: 8px; }
+
+/* Preview ring while cropping active */
+.photo-preview-ring {
+  position: relative;
+  display: inline-block;
+}
+
+.photo-preview-ring::after {
+  content: '✓ Photo updated';
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--success);
+  white-space: nowrap;
+  display: none;
+  background: #f0fdf4;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid #bbf7d0;
+}
+
+.photo-preview-ring.has-crop::after { display: block; }
+
+/* ─── Responsive ──────────────────────── */
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; border-radius: 0; flex-direction: row; flex-wrap: wrap; padding: 20px 18px; gap: 0; }
+  .brand { margin-bottom: 14px; width: 100%; }
+  .profile-trigger { margin-bottom: 12px; width: auto; min-width: 180px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; text-align: left; }
+  .profile-trigger .avatar { width: 44px; height: 44px; }
+  .profile-trigger h3 { margin-top: 0; font-size: 14px; }
+  .nav-section { display: flex; flex-wrap: wrap; gap: 4px; width: 100%; }
+  .nav-button { width: auto; padding: 9px 14px; }
+  .sidebar-footer { margin-top: 8px; padding-top: 8px; width: 100%; border-top-color: rgba(255,255,255,0.1); }
+  .main { padding: 22px 18px; }
+  .stats, .form-grid { grid-template-columns: 1fr 1fr; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .topbar { flex-direction: column; }
+  .topbar-pills { width: 100%; }
+  .progress-pill { flex: 1; }
+}
+
+@media (max-width: 600px) {
+  .stats { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .task-item { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body data-active-tab="{{ active_tab }}" data-show-profile-form="{{ show_profile_form|yesno:'true,false' }}" data-progress="{{ progress_percent }}">
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">✦</div>
+      <div class="brand-text">
+        TaskManager
+        <small>PRO WORKSPACE</small>
+      </div>
+    </div>
+
+    <button class="profile-trigger" type="button" onclick="showTab('profile')">
+      <div class="avatar-wrap">
+        {% if profile.image %}
+        <img class="avatar" src="{{ profile.image.url }}" alt="Profile photo">
+        {% else %}
+        <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile photo">
+        {% endif %}
+        <span class="avatar-badge"></span>
+      </div>
+      <h3>{{ request.user.username }}</h3>
+      <p>{{ request.user.email }}</p>
+    </button>
+
+    <nav class="nav-section">
+      <div class="nav-label">Navigation</div>
+      <button class="nav-button active" id="overviewNav" type="button" onclick="showTab('overview')">
+        <span class="nav-icon">⊞</span> Overview
+        <span class="badge">{{ total_tasks }}</span>
+      </button>
+      <button class="nav-button" id="profileNav" type="button" onclick="showTab('profile')">
+        <span class="nav-icon">◉</span> Profile
+      </button>
+      <button class="nav-button" id="tasksNav" type="button" onclick="showTab('tasks')">
+        <span class="nav-icon">✓</span> Tasks
+        <span class="badge">{{ pending_tasks }}</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a class="logout-link" href="{% url 'logout' %}">
+        <span>⎋</span> Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div>
+        <h1>Welcome back, {{ request.user.username }} 👋</h1>
+        <p>Here's what's happening with your tasks today.</p>
+      </div>
+      <div class="topbar-pills">
+        <div class="progress-pill">
+          <strong>{{ progress_percent }}%</strong>
+          <span>Completion</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Overview Tab ── -->
+    <section class="tab-panel active" id="overviewPanel">
+
+      <div class="stats">
+        <div class="stat-card">
+          <span class="stat-card-icon">📋</span>
+          <h4>Total Tasks</h4>
+          <h2>{{ total_tasks }}</h2>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-icon">✅</span>
+          <h4>Completed</h4>
+          <h2>{{ completed_tasks }}</h2>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-icon">⏳</span>
+          <h4>Pending</h4>
+          <h2>{{ pending_tasks }}</h2>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="section">
+        <div class="section-heading">
+          <div>
+            <h3>Your Progress</h3>
+            <p>{{ completed_tasks }} of {{ total_tasks }} tasks completed</p>
+          </div>
+          <span style="font-size:13px; color:var(--accent); font-weight:700; font-family:'DM Mono',monospace;">{{ progress_percent }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <!-- Add Task -->
+      <div class="section">
+        <div class="section-heading">
+          <div>
+            <h3>Add New Task</h3>
+            <p>Stay organized — capture your next task</p>
+          </div>
+        </div>
+        <form method="POST" class="add-task-form">
+          {% csrf_token %}
+          <input type="text" name="title" placeholder="Task title…" required>
+          <textarea name="description" placeholder="Add a description (optional)…"></textarea>
+          <div>
+            <button class="btn" type="submit" name="add_task">+ Add Task</button>
+          </div>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- ── Profile Tab ── -->
+    <section class="tab-panel" id="profilePanel">
+      <div class="section">
+        <div class="section-heading">
+          <div>
+            <h3>Your Profile</h3>
+            <p>Manage your personal information</p>
+          </div>
+          <button class="btn secondary" type="button" onclick="showEditProfile()">✎ Edit Profile</button>
+        </div>
+
+        <div class="profile-grid">
+
+          <!-- Left: photo column -->
+          <div class="profile-photo-large photo-col" id="photoCol">
+            <div class="photo-preview-ring" id="photoPreviewRing">
+              {% if profile.image %}
+              <img id="profilePreview" src="{{ profile.image.url }}" alt="Profile photo">
+              {% else %}
+              <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile photo">
+              {% endif %}
+            </div>
+            <p class="photo-status">Active account</p>
+
+            <!-- Change photo button sits right below the photo, shown when edit form is open -->
+            <button type="button" class="change-photo-btn" id="changePhotoBtn"
+                    style="display:none;" onclick="document.getElementById('id_image').click()">
+              📷 Change photo
+            </button>
+            <p class="photo-hint" id="photoHint" style="display:none;">
+              JPG, PNG or GIF · Max 5 MB<br>Crop to fit perfectly
+            </p>
+
+            <!-- Hidden real file input (lives inside editProfileForm below via JS move trick) -->
+          </div>
+
+          <!-- Right: info + form -->
+          <div>
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-item-icon">👤</span>
+                <div>
+                  <span>Username</span>
+                  <strong>{{ request.user.username }}</strong>
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-item-icon">✉</span>
+                <div>
+                  <span>Email Address</span>
+                  <strong>{{ request.user.email }}</strong>
+                </div>
+              </div>
+              <div class="info-item">
+                <span class="info-item-icon">📱</span>
+                <div>
+                  <span>Mobile</span>
+                  <strong>{% if profile.mobile %}{{ profile.mobile }}{% else %}Not added yet{% endif %}</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit Form -->
+            <form class="edit-profile" id="editProfileForm" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" name="update_profile" value="1">
+              <!-- cropped image blob will be injected here -->
+              <input type="hidden" name="cropped_image_data" id="croppedImageData">
+
+              <div class="divider"></div>
+              <p style="font-size:13px; font-weight:700; color:var(--text); margin-bottom:14px;">Edit Information</p>
+
+              <div class="form-grid">
+                <div class="field">
+                  <label for="{{ profile_form.username.id_for_label }}">Username</label>
+                  {{ profile_form.username }}
+                  {{ profile_form.username.errors }}
+                </div>
+                <div class="field">
+                  <label for="{{ profile_form.email.id_for_label }}">Email address</label>
+                  {{ profile_form.email }}
+                  {{ profile_form.email.errors }}
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="{{ profile_form.mobile.id_for_label }}">Mobile number</label>
+                {{ profile_form.mobile }}
+                {{ profile_form.mobile.errors }}
+              </div>
+
+              <!-- hidden file input stays in form for submission -->
+              {{ profile_form.image }}
+              {{ profile_form.image.errors }}
+
+              <div class="button-row">
+                <button class="btn" type="submit" name="update_profile">Save Changes</button>
+                <button class="btn secondary" type="button" onclick="hideEditProfile()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- ── Crop Modal ── -->
+        <div class="crop-overlay" id="cropOverlay">
+          <div class="crop-modal">
+
+            <!-- Header -->
+            <div class="crop-header">
+              <div class="crop-header-left">
+                <div class="crop-header-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 2 6 6 2 6"/><polyline points="18 22 18 18 22 18"/>
+                    <path d="M6 6L18 18"/><path d="M2 6h4v12h12v4"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="crop-header-title">Crop Profile Photo</div>
+                  <div class="crop-header-sub">Drag to reposition · Scroll to zoom</div>
+                </div>
+              </div>
+              <button class="crop-close" id="cropClose" type="button" title="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div class="crop-body">
+              <!-- Left: cropper canvas -->
+              <div class="crop-canvas-wrap">
+                <img id="cropImage" src="" alt="Crop preview">
+              </div>
+
+              <!-- Right: live previews -->
+              <div class="crop-preview-panel">
+                <div>
+                  <div class="crop-preview-label" style="text-align:center;margin-bottom:10px;">Preview</div>
+                  <div class="crop-preview-circle" id="cropPreviewCircle"></div>
+                </div>
+                <div>
+                  <div class="crop-preview-label" style="text-align:center;margin-bottom:8px;">Thumbnail</div>
+                  <div class="crop-preview-sq" id="cropPreviewSq"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="crop-controls">
+              <!-- Rotate group -->
+              <div class="crop-tool-group">
+                <button class="crop-tool-btn" id="rotLeft" type="button" title="Rotate left 45°">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2.5 2v6h6"/><path d="M2.66 15.57a10 10 0 1 0 .57-8.38"/>
+                  </svg>
+                </button>
+                <button class="crop-tool-btn" id="rotRight" type="button" title="Rotate right 45°">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Flip group -->
+              <div class="crop-tool-group">
+                <button class="crop-tool-btn" id="flipH" type="button" title="Flip horizontal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                  </svg>
+                </button>
+                <button class="crop-tool-btn" id="flipV" type="button" title="Flip vertical">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/>
+                    <line x1="4" y1="12" x2="20" y2="12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Reset -->
+              <div class="crop-tool-group">
+                <button class="crop-tool-btn" id="cropReset" type="button" title="Reset">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Zoom slider -->
+              <div class="crop-zoom-group">
+                <span class="crop-zoom-ico">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    <line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                </span>
+                <input type="range" class="crop-zoom-range" id="cropZoom" min="0" max="1" step="0.005" value="0.5">
+                <span class="crop-zoom-ico">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="crop-footer">
+              <div class="crop-footer-tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Square crop · Saved at 480 × 480 px
+              </div>
+              <div class="crop-footer-actions">
+                <button class="btn secondary" id="cropCancel" type="button">Discard</button>
+                <button class="btn" id="cropApply" type="button">
+                  <svg style="width:15px;height:15px;flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Use this photo
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Tasks Tab ── -->
+    <section class="tab-panel" id="tasksPanel">
+      <div class="section">
+        <div class="section-heading">
+          <div>
+            <h3>Your Tasks</h3>
+            <p>{{ completed_tasks }} completed · {{ pending_tasks }} pending</p>
+          </div>
+          <button class="btn secondary" type="button" onclick="showTab('overview')">+ Add Task</button>
+        </div>
+
+        {% if tasks %}
+        <div class="task-list">
+          {% for task in tasks %}
+          <div class="task-item {% if task.is_completed %}completed{% endif %}">
+            <div>
+              <div class="task-title">{{ task.title }}</div>
+              {% if task.description %}
+              <div class="task-desc">{{ task.description }}</div>
+              {% endif %}
+              <div class="task-meta">
+                {% if task.is_completed %}
+                <span class="status complete">Completed</span>
+                {% else %}
+                <span class="status pending">Pending</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="button-row">
+              {% if task.is_completed %}
+              <span class="btn done">✓ Done</span>
+              {% else %}
+              <a class="btn" href="{% url 'complete_task' task.id %}">Mark Complete</a>
+              {% endif %}
+              <a class="btn danger" href="{% url 'delete_task' task.id %}">Delete</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <span class="empty-state-icon">📭</span>
+          <div class="empty-state-title">No tasks yet</div>
+          <p>Add your first task from the Overview tab to get started.</p>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ── Tab navigation ── */
+function showTab(tabName) {
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-button").forEach(b => b.classList.remove("active"));
+  document.getElementById(tabName + "Panel").classList.add("active");
+  document.getElementById(tabName + "Nav").classList.add("active");
+}
+
+function showEditProfile() {
+  showTab("profile");
+  document.getElementById("editProfileForm").classList.add("active");
+  document.getElementById("changePhotoBtn").style.display = "flex";
+  document.getElementById("photoHint").style.display = "block";
+}
+
+function hideEditProfile() {
+  document.getElementById("editProfileForm").classList.remove("active");
+  document.getElementById("changePhotoBtn").style.display = "none";
+  document.getElementById("photoHint").style.display = "none";
+  document.getElementById("photoPreviewRing").classList.remove("has-crop");
+  croppedBlob = null;
+}
+
+/* ── Crop logic ── */
+let croppedBlob = null;   /* holds the final cropped File blob */
+
+document.addEventListener("DOMContentLoaded", function () {
+  const pageData     = document.body.dataset;
+  const progressFill = document.getElementById("progressFill");
+
+  /* progress bar animation */
+  if (progressFill) {
+    const pct = Number(pageData.progress || 0);
+    requestAnimationFrame(() => setTimeout(() => { progressFill.style.width = pct + "%"; }, 120));
+  }
+
+  if (pageData.activeTab === "profile") showTab("profile");
+  if (pageData.showProfileForm === "true") showEditProfile();
+
+  /* ── Element refs ── */
+  const imageInput     = document.getElementById("id_image");
+  const profilePreview = document.getElementById("profilePreview");
+  const cropOverlay    = document.getElementById("cropOverlay");
+  const cropImage      = document.getElementById("cropImage");
+  const cropZoom       = document.getElementById("cropZoom");
+  const previewRing    = document.getElementById("photoPreviewRing");
+  const form           = document.getElementById("editProfileForm");
+  const saveBtn        = form ? form.querySelector("button[name='update_profile']") : null;
+
+  let cropper     = null;
+  let currentFile = null;
+
+  /* hide the raw file input — triggered programmatically */
+  if (imageInput) imageInput.style.display = "none";
+
+  /* ── Open cropper when a file is chosen ── */
+  imageInput?.addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    currentFile = file;
+
+    if (cropper) { cropper.destroy(); cropper = null; }
+
+    cropImage.src = URL.createObjectURL(file);
+    cropOverlay.classList.add("open");
+    document.getElementById("editProfileForm").classList.add("active");
+    document.getElementById("changePhotoBtn").style.display = "flex";
+    document.getElementById("photoHint").style.display = "block";
+
+    cropImage.onload = function () {
+      cropper = new Cropper(cropImage, {
+        aspectRatio: 1,
+        viewMode: 1,
+        autoCropArea: 0.82,
+        movable: true,
+        rotatable: true,
+        scalable: true,
+        zoomable: true,
+        zoomOnWheel: true,
+        background: true,
+        preview: ["#cropPreviewCircle", "#cropPreviewSq"],
+        ready() {
+          cropZoom.value = 0.5;
+          updateZoomTrack(0.5);
+        }
+      });
+    };
+  });
+
+  /* zoom slider with track gradient */
+  function updateZoomTrack(val) {
+    cropZoom.style.setProperty("--pct", (val * 100) + "%");
+  }
+
+  cropZoom?.addEventListener("input", function () {
+    const v = parseFloat(this.value);
+    updateZoomTrack(v);
+    if (cropper) cropper.zoomTo(0.1 + v * 2.9);
+  });
+
+  /* rotate */
+  document.getElementById("rotLeft")?.addEventListener("click",  () => cropper?.rotate(-45));
+  document.getElementById("rotRight")?.addEventListener("click", () => cropper?.rotate(45));
+
+  /* flip */
+  document.getElementById("flipH")?.addEventListener("click", () => {
+    if (!cropper) return;
+    const d = cropper.getData(); cropper.scaleX(d.scaleX === -1 ? 1 : -1);
+  });
+  document.getElementById("flipV")?.addEventListener("click", () => {
+    if (!cropper) return;
+    const d = cropper.getData(); cropper.scaleY(d.scaleY === -1 ? 1 : -1);
+  });
+
+  /* reset */
+  document.getElementById("cropReset")?.addEventListener("click", () => {
+    if (!cropper) return;
+    cropper.reset();
+    cropZoom.value = 0.5;
+    updateZoomTrack(0.5);
+  });
+
+  /* close helpers */
+  function closeCropModal() {
+    cropOverlay.classList.remove("open");
+    if (cropper) { cropper.destroy(); cropper = null; }
+    imageInput.value = "";
+    cropImage.src    = "";
+  }
+
+  document.getElementById("cropClose")?.addEventListener("click",  closeCropModal);
+  document.getElementById("cropCancel")?.addEventListener("click", closeCropModal);
+  cropOverlay?.addEventListener("click", e => { if (e.target === cropOverlay) closeCropModal(); });
+
+  /* ── Apply crop: store blob, update preview, close modal ── */
+  document.getElementById("cropApply")?.addEventListener("click", function () {
+    if (!cropper) return;
+
+    const canvas = cropper.getCroppedCanvas({ width: 480, height: 480, imageSmoothingQuality: "high" });
+
+    canvas.toBlob(function (blob) {
+      const ext  = (currentFile?.type === "image/png") ? "png" : "jpeg";
+      croppedBlob = new File([blob], `profile.${ext}`, { type: `image/${ext}` });
+
+      /* live preview update */
+      profilePreview.src = URL.createObjectURL(croppedBlob);
+      previewRing.classList.add("has-crop");
+
+      closeCropModal();
+    }, "image/jpeg", 0.93);
+  });
+
+  /* ── Intercept form submit: use fetch + FormData so the blob is reliably sent ── */
+  form?.addEventListener("submit", function (e) {
+    /* only intercept when we have a cropped image */
+    if (!croppedBlob) return;   /* no crop → normal submit works fine */
+
+    e.preventDefault();
+
+    const fd = new FormData(form);
+    /* replace/add the image field with the actual cropped blob */
+    fd.set("image", croppedBlob, croppedBlob.name);
+
+    /* show saving state */
+    if (saveBtn) { saveBtn.textContent = "Saving…"; saveBtn.disabled = true; }
+
+    fetch(form.action || window.location.href, {
+      method: "POST",
+      headers: { "X-CSRFToken": form.querySelector("[name=csrfmiddlewaretoken]").value },
+      body: fd
+    })
+    .then(res => {
+      if (res.ok || res.redirected) {
+        /* reload to reflect server-saved photo */
+        window.location.href = res.url || window.location.href;
+      } else {
+        return res.text().then(html => {
+          /* server returned a validation error page — swap it in */
+          document.open(); document.write(html); document.close();
+        });
+      }
+    })
+    .catch(() => {
+      alert("Upload failed. Please try again.");
+      if (saveBtn) { saveBtn.textContent = "Save Changes"; saveBtn.disabled = false; }
+    });
+  });
+});
+</script>
+
+</body>
+</html>

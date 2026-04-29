@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Segoe UI, Arial, sans-serif;
+    }
+
+    body{
+        min-height:100vh;
+        background:#eef2ff;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding:30px;
+        color:#0f172a;
+    }
+
+    .wrapper{
+        width:1050px;
+        max-width:100%;
+        display:grid;
+        grid-template-columns:0.95fr 1.05fr;
+        background:white;
+        border-radius:20px;
+        overflow:hidden;
+        box-shadow:0 24px 70px rgba(15,23,42,0.18);
+    }
+
+    .left{
+        min-height:700px;
+        padding:60px;
+        color:white;
+        display:flex;
+        flex-direction:column;
+        justify-content:space-between;
+        background:linear-gradient(145deg,#172554,#2563eb);
+    }
+
+    .brand{
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        font-size:15px;
+        font-weight:700;
+        letter-spacing:.4px;
+    }
+
+    .brand-mark{
+        width:38px;
+        height:38px;
+        border-radius:12px;
+        background:rgba(255,255,255,0.18);
+        display:grid;
+        place-items:center;
+        font-size:14px;
+        font-weight:800;
+    }
+
+    .left h1{
+        font-size:46px;
+        line-height:1.08;
+        margin-bottom:18px;
+    }
+
+    .left p{
+        font-size:17px;
+        opacity:.92;
+        line-height:1.7;
+        max-width:430px;
+    }
+
+    .feature-list{
+        display:grid;
+        gap:14px;
+        margin-top:34px;
+    }
+
+    .feature-item{
+        padding:15px 16px;
+        border:1px solid rgba(255,255,255,0.16);
+        border-radius:12px;
+        background:rgba(255,255,255,0.1);
+        font-size:15px;
+    }
+
+    .right{
+        padding:44px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+    }
+
+    .panel-heading{
+        margin-bottom:24px;
+    }
+
+    .panel-heading h2{
+        font-size:28px;
+        margin-bottom:8px;
+    }
+
+    .panel-heading p{
+        color:#64748b;
+        line-height:1.5;
+    }
+
+    .tabs{
+        display:flex;
+        padding:4px;
+        background:#e2e8f0;
+        border-radius:12px;
+        margin-bottom:24px;
+    }
+
+    .tabs button{
+        flex:1;
+        padding:12px;
+        border:none;
+        cursor:pointer;
+        background:transparent;
+        color:#475569;
+        border-radius:9px;
+        font-size:15px;
+        font-weight:700;
+        transition:.2s ease;
+    }
+
+    .tabs button.active{
+        background:white;
+        color:#2563eb;
+        box-shadow:0 8px 18px rgba(15,23,42,0.12);
+    }
+
+    .form-box{
+        display:none;
+    }
+
+    .form-box.active{
+        display:block;
+    }
+
+    .field{
+        margin-bottom:14px;
+    }
+
+    input{
+        position:relative;
+        z-index:1;
+        width:100%;
+        padding:14px;
+        border:1px solid #cbd5e1;
+        border-radius:10px;
+        outline:none;
+        font-size:15px;
+        transition:border-color .2s ease, box-shadow .2s ease;
+    }
+
+    input:focus{
+        border-color:#2563eb;
+        box-shadow:0 0 0 4px rgba(37,99,235,0.12);
+    }
+
+    button.submit{
+        width:100%;
+        padding:14px;
+        background:#2563eb;
+        color:white;
+        border:none;
+        border-radius:10px;
+        font-size:16px;
+        font-weight:700;
+        cursor:pointer;
+        transition:background .2s ease, transform .2s ease;
+    }
+
+    button.submit:hover{
+        background:#1d4ed8;
+        transform:translateY(-1px);
+    }
+
+    .error,
+    .errorlist{
+        color:#dc2626;
+        font-size:14px;
+        margin-bottom:10px;
+        list-style:none;
+    }
+
+    .helptext{
+        display:block;
+        margin-top:6px;
+        color:#64748b;
+        font-size:12px;
+        line-height:1.4;
+    }
+
+    label{
+        display:block;
+        margin-bottom:7px;
+        font-size:14px;
+        font-weight:700;
+    }
+
+    .avatar-block{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:10px;
+        text-align:center;
+        margin-bottom:24px;
+        padding:20px;
+        border:1px solid #e2e8f0;
+        border-radius:16px;
+        background:#f8fafc;
+    }
+
+    .avatar-upload{
+        width:128px;
+        height:128px;
+        border-radius:50%;
+        overflow:hidden;
+        position:relative;
+        margin:0;
+        cursor:pointer;
+        border:4px solid #2563eb;
+        display:block;
+        box-shadow:0 10px 28px rgba(37,99,235,0.25);
+    }
+
+    .avatar-upload img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+    }
+
+    .avatar-upload span{
+        position:absolute;
+        left:0;
+        right:0;
+        bottom:0;
+        min-height:34px;
+        border-radius:50%;
+        background:rgba(37,99,235,0.92);
+        color:white;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:12px;
+        font-weight:bold;
+        border-radius:0;
+    }
+
+    .avatar-hint{
+        color:#64748b;
+        font-size:13px;
+        line-height:1.4;
+    }
+
+    .crop-card{
+        display:none;
+        width:100%;
+        margin-top:8px;
+        padding:16px;
+        border:1px solid #dbeafe;
+        border-radius:14px;
+        background:white;
+    }
+
+    .crop-card.active{
+        display:block;
+    }
+
+    .crop-canvas-wrap{
+        position:relative;
+        width:260px;
+        height:260px;
+        max-width:100%;
+        margin:0 auto 14px;
+        border-radius:18px;
+        overflow:hidden;
+        background:#e2e8f0;
+        cursor:grab;
+        touch-action:none;
+    }
+
+    .crop-canvas-wrap:active{
+        cursor:grabbing;
+    }
+
+    .crop-canvas-wrap canvas{
+        width:100%;
+        height:100%;
+        display:block;
+    }
+
+    .crop-canvas-wrap::after{
+        content:"";
+        position:absolute;
+        inset:18px;
+        border:2px solid rgba(255,255,255,0.92);
+        border-radius:50%;
+        box-shadow:0 0 0 999px rgba(15,23,42,0.35);
+        pointer-events:none;
+    }
+
+    .crop-row{
+        display:grid;
+        grid-template-columns:auto 1fr;
+        gap:12px;
+        align-items:center;
+        margin-bottom:14px;
+        text-align:left;
+    }
+
+    .crop-row label{
+        margin:0;
+        color:#475569;
+        font-size:13px;
+    }
+
+    .crop-row input{
+        padding:0;
+        accent-color:#2563eb;
+    }
+
+    .crop-actions{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+    }
+
+    .crop-actions button{
+        padding:11px 12px;
+        border:0;
+        border-radius:10px;
+        cursor:pointer;
+        font-weight:700;
+    }
+
+    .crop-save{
+        background:#2563eb;
+        color:white;
+    }
+
+    .crop-cancel{
+        background:#e2e8f0;
+        color:#334155;
+    }
+
+    .form-message{
+        display:none;
+        margin-bottom:12px;
+        padding:11px 12px;
+        border-radius:10px;
+        background:#fee2e2;
+        color:#991b1b;
+        font-size:14px;
+        line-height:1.4;
+    }
+
+    .form-message.active{
+        display:block;
+    }
+
+    #id_image{
+        display:none;
+    }
+
+    @media(max-width:900px){
+        body{
+            padding:18px;
+            align-items:flex-start;
+        }
+
+        .wrapper{
+            grid-template-columns:1fr;
+        }
+
+        .left{
+            min-height:auto;
+            padding:34px;
+        }
+
+        .left h1{
+            font-size:34px;
+        }
+
+        .feature-list{
+            display:none;
+        }
+
+        .right{
+            padding:30px 22px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+<div class="left">
+<div class="brand">
+<span class="brand-mark">TM</span>
+<span>Task Manager</span>
+</div>
+
+<div>
+<h1>Organize your day with less friction.</h1>
+
+<p>
+Manage daily work, upload your profile photo, track tasks, and keep everything in one focused dashboard.
+</p>
+
+<div class="feature-list">
+<div class="feature-item">Create and monitor personal tasks</div>
+<div class="feature-item">Keep profile details together</div>
+<div class="feature-item">Move quickly between login and registration</div>
+</div>
+</div>
+
+</div>
+
+<div class="right">
+
+<div class="panel-heading">
+<h2>Welcome</h2>
+<p>Login to continue, or create a new account in a few seconds.</p>
+</div>
+
+<div class="tabs">
+<button class="{% if not register_form.errors %}active{% endif %}" onclick="showTab('login',this)" type="button">Login</button>
+<button class="{% if register_form.errors %}active{% endif %}" onclick="showTab('register',this)" type="button">Register</button>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="form-box {% if not register_form.errors %}active{% endif %}">
+
+{% if login_error %}
+<p class="error">{{ login_error }}</p>
+{% endif %}
+
+<form method="POST">
+{% csrf_token %}
+
+<div class="field">
+<input type="text" name="username" placeholder="Username" required>
+</div>
+
+<div class="field">
+<input type="password" name="password" placeholder="Password" required>
+</div>
+
+<button class="submit" type="submit" name="login_btn">
+Login
+</button>
+
+</form>
+
+</div>
+
+<!-- REGISTER -->
+<div id="register" class="form-box {% if register_form.errors %}active{% endif %}">
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+<input type="hidden" name="image_data" id="imageData" value="{{ image_data|default:'' }}">
+
+{% if register_form.non_field_errors %}
+{{ register_form.non_field_errors }}
+{% endif %}
+
+<p class="form-message" id="registerMessage"></p>
+
+<div class="avatar-block">
+
+<label for="id_image" class="avatar-upload">
+
+<img id="preview"
+src="{% if image_data %}{{ image_data }}{% else %}https://cdn-icons-png.flaticon.com/512/149/149071.png{% endif %}"
+alt="Profile preview">
+
+<span>Choose photo</span>
+
+</label>
+
+<p class="avatar-hint">Optional profile photo. Choose an image, crop it, then create your account.</p>
+
+<div class="crop-card" id="cropCard">
+<div class="crop-canvas-wrap" id="cropCanvasWrap">
+<canvas id="cropCanvas" width="600" height="600"></canvas>
+</div>
+
+<div class="crop-row">
+<label for="zoomRange">Zoom</label>
+<input id="zoomRange" type="range" min="1" max="3" step="0.01" value="1">
+</div>
+
+<div class="crop-actions">
+<button type="button" class="crop-cancel" id="cropReset">Reset</button>
+<button type="button" class="crop-save" id="cropApply">Use cropped photo</button>
+</div>
+</div>
+
+</div>
+
+<div class="field">
+<label for="{{ register_form.username.id_for_label }}">Username</label>
+{{ register_form.username }}
+{{ register_form.username.errors }}
+</div>
+
+<div class="field">
+<label for="{{ register_form.email.id_for_label }}">Email address</label>
+{{ register_form.email }}
+{{ register_form.email.errors }}
+</div>
+
+<div class="field">
+<label for="{{ register_form.mobile.id_for_label }}">Mobile number</label>
+{{ register_form.mobile }}
+{{ register_form.mobile.errors }}
+</div>
+
+<div class="field">
+<label for="{{ register_form.password1.id_for_label }}">Password</label>
+<input type="password" name="password1" id="id_password1" placeholder="Password" autocomplete="new-password" minlength="8" required>
+{{ register_form.password1.errors }}
+</div>
+
+<div class="field">
+<label for="{{ register_form.password2.id_for_label }}">Confirm password</label>
+<input type="password" name="password2" id="id_password2" placeholder="Confirm password" autocomplete="new-password" minlength="8" required>
+{{ register_form.password2.errors }}
+</div>
+
+{{ register_form.image }}
+{{ register_form.image.errors }}
+
+<button class="submit" type="submit" name="register_btn">
+Create Account
+</button>
+
+</form>
+
+</div>
+
+</div>
+</div>
+
+<script>
+function showTab(id,btn){
+
+document.querySelectorAll('.form-box').forEach(box=>{
+box.classList.remove('active');
+});
+
+document.querySelectorAll('.tabs button').forEach(b=>{
+b.classList.remove('active');
+});
+
+document.getElementById(id).classList.add('active');
+btn.classList.add('active');
+}
+
+/* image crop and preview */
+document.addEventListener("DOMContentLoaded", function(){
+const fileInput = document.getElementById("id_image");
+const preview = document.getElementById("preview");
+const cropCard = document.getElementById("cropCard");
+const cropCanvas = document.getElementById("cropCanvas");
+const cropWrap = document.getElementById("cropCanvasWrap");
+const zoomRange = document.getElementById("zoomRange");
+const cropApply = document.getElementById("cropApply");
+const cropReset = document.getElementById("cropReset");
+const registerForm = document.querySelector('#register form');
+const imageData = document.getElementById("imageData");
+const password1 = document.getElementById("id_password1");
+const password2 = document.getElementById("id_password2");
+const registerMessage = document.getElementById("registerMessage");
+
+if(!fileInput || !cropCanvas){
+return;
+}
+
+const context = cropCanvas.getContext("2d");
+const cropImage = new Image();
+let originalFileName = "profile.jpg";
+let imageReady = false;
+let scale = 1;
+let minScale = 1;
+let offsetX = 0;
+let offsetY = 0;
+let startX = 0;
+let startY = 0;
+let startOffsetX = 0;
+let startOffsetY = 0;
+let isDragging = false;
+
+function clampOffsets(){
+const width = cropImage.width * scale;
+const height = cropImage.height * scale;
+const minX = Math.min(0, cropCanvas.width - width);
+const minY = Math.min(0, cropCanvas.height - height);
+
+offsetX = Math.min(0, Math.max(minX, offsetX));
+offsetY = Math.min(0, Math.max(minY, offsetY));
+}
+
+function drawCrop(){
+if(!imageReady){
+return;
+}
+
+clampOffsets();
+context.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+context.fillStyle = "#e2e8f0";
+context.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+context.drawImage(
+cropImage,
+offsetX,
+offsetY,
+cropImage.width * scale,
+cropImage.height * scale
+);
+}
+
+function setInitialCrop(){
+minScale = Math.max(
+cropCanvas.width / cropImage.width,
+cropCanvas.height / cropImage.height
+);
+scale = minScale;
+zoomRange.value = "1";
+offsetX = (cropCanvas.width - cropImage.width * scale) / 2;
+offsetY = (cropCanvas.height - cropImage.height * scale) / 2;
+drawCrop();
+}
+
+function canvasToFile(){
+const dataUrl = cropCanvas.toDataURL("image/jpeg", 0.92);
+const parts = dataUrl.split(",");
+const mime = parts[0].match(/:(.*?);/)[1];
+const binary = atob(parts[1]);
+const bytes = new Uint8Array(binary.length);
+
+for(let i = 0; i < binary.length; i++){
+bytes[i] = binary.charCodeAt(i);
+}
+
+return new File(
+[bytes],
+originalFileName.replace(/\.[^.]+$/, "") + "-cropped.jpg",
+{ type:mime }
+);
+}
+
+function applyCroppedPhoto(){
+if(!imageReady){
+return;
+}
+
+const croppedFile = canvasToFile();
+const transfer = new DataTransfer();
+transfer.items.add(croppedFile);
+fileInput.files = transfer.files;
+const croppedData = cropCanvas.toDataURL("image/jpeg", 0.92);
+preview.src = croppedData;
+imageData.value = croppedData;
+cropCard.classList.remove("active");
+}
+
+function getPointerPosition(event){
+const rect = cropWrap.getBoundingClientRect();
+return {
+x:(event.clientX - rect.left) * (cropCanvas.width / rect.width),
+y:(event.clientY - rect.top) * (cropCanvas.height / rect.height)
+};
+}
+
+fileInput.addEventListener("change", function(event){
+const file = event.target.files[0];
+
+if(!file){
+return;
+}
+
+originalFileName = file.name;
+const imageUrl = URL.createObjectURL(file);
+
+cropImage.onload = function(){
+URL.revokeObjectURL(imageUrl);
+imageReady = true;
+cropCard.classList.add("active");
+setInitialCrop();
+};
+
+cropImage.src = imageUrl;
+});
+
+zoomRange.addEventListener("input", function(){
+if(!imageReady){
+return;
+}
+
+const previousScale = scale;
+const centerX = cropCanvas.width / 2;
+const centerY = cropCanvas.height / 2;
+scale = minScale * Number(zoomRange.value);
+offsetX = centerX - ((centerX - offsetX) / previousScale) * scale;
+offsetY = centerY - ((centerY - offsetY) / previousScale) * scale;
+drawCrop();
+});
+
+cropWrap.addEventListener("pointerdown", function(event){
+if(!imageReady){
+return;
+}
+
+isDragging = true;
+cropWrap.setPointerCapture(event.pointerId);
+const point = getPointerPosition(event);
+startX = point.x;
+startY = point.y;
+startOffsetX = offsetX;
+startOffsetY = offsetY;
+});
+
+cropWrap.addEventListener("pointermove", function(event){
+if(!isDragging){
+return;
+}
+
+const point = getPointerPosition(event);
+offsetX = startOffsetX + point.x - startX;
+offsetY = startOffsetY + point.y - startY;
+drawCrop();
+});
+
+cropWrap.addEventListener("pointerup", function(){
+isDragging = false;
+});
+
+cropWrap.addEventListener("pointercancel", function(){
+isDragging = false;
+});
+
+cropReset.addEventListener("click", setInitialCrop);
+cropApply.addEventListener("click", applyCroppedPhoto);
+
+function showRegisterMessage(message){
+registerMessage.textContent = message;
+registerMessage.classList.add("active");
+}
+
+registerForm.addEventListener("submit", function(event){
+registerMessage.classList.remove("active");
+
+if(password1.value.length < 8){
+event.preventDefault();
+showRegisterMessage("Password must contain at least 8 characters. Your selected photo is still kept here.");
+password1.focus();
+return;
+}
+
+if(password1.value !== password2.value){
+event.preventDefault();
+showRegisterMessage("Password and confirm password must match. Your selected photo is still kept here.");
+password2.focus();
+return;
+}
+
+if(cropCard.classList.contains("active")){
+applyCroppedPhoto();
+}
+});
+});
+</script>
+
+</body>
+</html>

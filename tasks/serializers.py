@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from .models import Task, UserProfile
 
 
-# -------------------------------
+# ==================================
 # USER REGISTRATION SERIALIZER
-# -------------------------------
+# ==================================
 class RegisterSerializer(serializers.ModelSerializer):
     mobile = serializers.CharField(write_only=True)
 
@@ -19,10 +19,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         mobile = validated_data.pop('mobile')
 
-        # Create user
         user = User.objects.create_user(**validated_data)
 
-        # Create profile
         profile, created = UserProfile.objects.get_or_create(user=user)
         profile.mobile = mobile
         profile.save()
@@ -30,33 +28,85 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-# -------------------------------
-# USER CRUD SERIALIZER
-# -------------------------------
+# ==================================
+# USER CRUD SERIALIZER + IMAGE
+# FINAL FIX
+# ==================================
 class UserSerializer(serializers.ModelSerializer):
-    mobile = serializers.CharField(source='userprofile.mobile')
+    mobile = serializers.CharField(
+        required=False,
+        allow_blank=True
+    )
+
+    image = serializers.ImageField(
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'mobile']
+        fields = ['id', 'username', 'email', 'mobile', 'image']
+
+    def validate_username(self, value):
+        if self.instance:
+            if User.objects.exclude(
+                id=self.instance.id
+            ).filter(
+                username=value
+            ).exists():
+                raise serializers.ValidationError(
+                    "Username already exists."
+                )
+        return value
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        profile, created = UserProfile.objects.get_or_create(
+            user=instance
+        )
+
+        data['mobile'] = profile.mobile
+
+        if profile.image:
+            data['image'] = profile.image.url
+        else:
+            data['image'] = None
+
+        return data
 
     def update(self, instance, validated_data):
-        profile_data = validated_data.pop('userprofile', {})
+        mobile = validated_data.pop('mobile', None)
+        image = validated_data.pop('image', None)
 
-        instance.username = validated_data.get('username', instance.username)
-        instance.email = validated_data.get('email', instance.email)
+        # Update User table
+        if 'username' in validated_data:
+            instance.username = validated_data['username']
+
+        if 'email' in validated_data:
+            instance.email = validated_data['email']
+
         instance.save()
 
-        profile, created = UserProfile.objects.get_or_create(user=instance)
-        profile.mobile = profile_data.get('mobile', profile.mobile)
+        # Update Profile table
+        profile, created = UserProfile.objects.get_or_create(
+            user=instance
+        )
+
+        if mobile is not None:
+            profile.mobile = mobile
+
+        if image is not None:
+            profile.image = image
+
         profile.save()
 
         return instance
 
 
-# -------------------------------
+# ==================================
 # TASK SERIALIZER
-# -------------------------------
+# ==================================
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task

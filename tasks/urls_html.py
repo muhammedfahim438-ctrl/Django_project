@@ -1,19 +1,39 @@
 from django.urls import path
 from .views import (
-    task_list,
-    add_task,
-    register_view,
-    user_list,
-    edit_user,
-    delete_user
+    auth_page,
+    dashboard,
+    edit_task,
+    complete_task,
+    delete_task,
+    delete_user,
+    logout_view,
 )
 
 urlpatterns = [
-    path('', task_list, name='task_list'),
-    path('add/', add_task, name='add_task'),
-    path('register/', register_view, name='register'),
+    # -------------------------
+    # AUTH PAGE
+    # -------------------------
+    path('', auth_page, name='auth'),
 
-    path('users/', user_list, name='user_list'),
-    path('users/edit/<int:id>/', edit_user, name='edit_user'),
-    path('users/delete/<int:id>/', delete_user, name='delete_user'),
+    # -------------------------
+    # DASHBOARD
+    # -------------------------
+    path('dashboard/', dashboard, name='dashboard'),
+
+    # -------------------------
+    # TASK ACTIONS
+    # -------------------------
+    path('task/edit/<int:id>/', edit_task, name='edit_task'),
+    path('task/complete/<int:id>/', complete_task, name='complete_task'),
+    path('task/delete/<int:id>/', delete_task, name='delete_task'),
+
+    # -------------------------
+    # USER ACTIONS
+    # -------------------------
+    path('user/delete/<int:id>/', delete_user, name='delete_user'),
+
+    # -------------------------
+    # LOGOUT
+    # -------------------------
+    path('logout/', logout_view, name='logout'),
 ]
